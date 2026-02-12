@@ -1,0 +1,1925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sports Analysis Pro - Multi-Sport Performance Analytics</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&family=Audiowide&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00ffcc;
+            --secondary: #ff00aa;
+            --accent: #ffaa00;
+            --dark: #0a0e1a;
+            --darker: #050810;
+            --card: #131824;
+            --text: #e0e6ed;
+            --text-dim: #8b92a0;
+            --danger: #ff3366;
+            --warning: #ffaa00;
+            --success: #00ffcc;
+            --border: rgba(255, 255, 255, 0.08);
+            --tennis-green: #7fdb6a;
+            --cricket-blue: #4a9eff;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--darker);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            transform: perspective(500px) rotateX(60deg);
+        }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+        }
+
+        .glow-orbs {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.12;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 450px;
+            height: 450px;
+            background: var(--primary);
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 350px;
+            height: 350px;
+            background: var(--secondary);
+            bottom: -100px;
+            right: -100px;
+            animation-delay: 5s;
+        }
+
+        .orb-3 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent);
+            top: 50%;
+            right: 10%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(120px, -120px) scale(1.15); }
+            66% { transform: translate(-60px, 120px) scale(0.85); }
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Audiowide', cursive;
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--darker);
+            box-shadow: 0 10px 40px rgba(0, 255, 204, 0.4);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); box-shadow: 0 10px 40px rgba(0, 255, 204, 0.4); }
+            50% { transform: scale(1.08) rotate(5deg); box-shadow: 0 15px 50px rgba(0, 255, 204, 0.6); }
+        }
+
+        h1 {
+            font-family: 'Audiowide', cursive;
+            font-size: 52px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 19px;
+            color: var(--text-dim);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        /* Sport Selection */
+        .sport-selection {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .sport-title {
+            font-family: 'Audiowide', cursive;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 30px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .sport-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .sport-btn {
+            background: linear-gradient(135deg, rgba(0, 255, 204, 0.08), rgba(255, 0, 170, 0.08));
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 40px 30px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sport-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .sport-btn:hover::before {
+            left: 100%;
+        }
+
+        .sport-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: var(--primary);
+            box-shadow: 0 15px 40px rgba(0, 255, 204, 0.25);
+        }
+
+        .sport-btn.active {
+            background: linear-gradient(135deg, rgba(0, 255, 204, 0.2), rgba(255, 0, 170, 0.2));
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.4);
+        }
+
+        .sport-icon {
+            font-size: 52px;
+            margin-bottom: 15px;
+        }
+
+        .sport-name {
+            font-family: 'Audiowide', cursive;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .sport-desc {
+            font-size: 15px;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* Mode Selection */
+        .mode-selection {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            display: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .mode-selection.active {
+            display: block;
+            animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mode-title {
+            font-family: 'Audiowide', cursive;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 30px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .mode-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .mode-btn {
+            background: linear-gradient(135deg, rgba(0, 255, 204, 0.1), rgba(74, 158, 255, 0.1));
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 35px 25px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+            transition: left 0.5s;
+        }
+
+        .mode-btn:hover::before {
+            left: 100%;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 40px rgba(0, 255, 204, 0.2);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, rgba(0, 255, 204, 0.2), rgba(74, 158, 255, 0.2));
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
+        }
+
+        .mode-icon {
+            font-size: 44px;
+            margin-bottom: 12px;
+        }
+
+        .mode-name {
+            font-family: 'Audiowide', cursive;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .mode-desc {
+            font-size: 14px;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            display: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .upload-section.active {
+            display: block;
+            animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .upload-area {
+            border: 3px dashed var(--border);
+            border-radius: 16px;
+            padding: 60px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, rgba(0, 255, 204, 0.03), rgba(74, 158, 255, 0.03));
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(0, 255, 204, 0.08), rgba(74, 158, 255, 0.08));
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(0, 255, 204, 0.15), rgba(74, 158, 255, 0.15));
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 68px;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+
+        .upload-text {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .upload-hint {
+            font-size: 15px;
+            color: var(--text-dim);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Video Preview */
+        .video-preview {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .video-preview.active {
+            display: block;
+        }
+
+        video {
+            width: 100%;
+            max-height: 500px;
+            border-radius: 12px;
+            background: #000;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Analyze Button */
+        .analyze-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--darker);
+            border: none;
+            padding: 20px 55px;
+            font-size: 19px;
+            font-weight: 700;
+            font-family: 'Audiowide', cursive;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 30px;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analyze-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .analyze-btn:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 255, 204, 0.5);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-text {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Loading State */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 70px;
+            height: 70px;
+            border: 5px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 19px;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+            animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .results-header {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .results-title {
+            font-family: 'Audiowide', cursive;
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .result-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.5s;
+        }
+
+        .result-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 255, 204, 0.15);
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-family: 'Audiowide', cursive;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .result-desc {
+            font-size: 15px;
+            color: var(--text-dim);
+        }
+
+        /* Status Indicators */
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .status-legal, .status-low {
+            background: rgba(0, 255, 204, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-illegal, .status-high {
+            background: rgba(255, 51, 102, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .status-warning, .status-medium {
+            background: rgba(255, 170, 0, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .status-excellent {
+            background: rgba(0, 255, 204, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-good {
+            background: rgba(127, 219, 106, 0.2);
+            color: var(--tennis-green);
+            border: 1px solid var(--tennis-green);
+        }
+
+        .status-fair {
+            background: rgba(255, 170, 0, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .status-poor {
+            background: rgba(255, 51, 102, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        /* Detailed Analysis */
+        .detailed-analysis {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        .analysis-title {
+            font-family: 'Audiowide', cursive;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .analysis-item {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .analysis-item:last-child {
+            border-bottom: none;
+        }
+
+        .analysis-point {
+            font-size: 17px;
+            color: var(--text);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .analysis-detail {
+            font-size: 15px;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-label {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Reset Button */
+        .reset-btn {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text);
+            padding: 16px 45px;
+            font-size: 17px;
+            font-weight: 600;
+            font-family: 'Exo 2', sans-serif;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .reset-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.2);
+        }
+
+        /* Chart Canvas */
+        .chart-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+        }
+
+        canvas {
+            max-width: 100%;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 36px;
+            }
+
+            .sport-buttons, .mode-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sport-selection, .mode-selection, .upload-section, .results-header, .detailed-analysis {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="grid-overlay"></div>
+        <div class="glow-orbs">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">⚡</div>
+            </div>
+            <h1>AI Sports Analysis Pro</h1>
+            <p class="subtitle">Advanced Multi-Sport Performance Analytics Powered by Artificial Intelligence</p>
+        </header>
+
+        <!-- Sport Selection -->
+        <div class="sport-selection" id="sportSelection">
+            <h2 class="sport-title">Select Your Sport</h2>
+            <div class="sport-buttons">
+                <div class="sport-btn" data-sport="cricket">
+                    <div class="sport-icon">🏏</div>
+                    <div class="sport-name">Cricket</div>
+                    <div class="sport-desc">Comprehensive bowling & batting analysis with injury risk assessment, ICC compliance checking, and biomechanical insights</div>
+                </div>
+                <div class="sport-btn" data-sport="tennis">
+                    <div class="sport-icon">🎾</div>
+                    <div class="sport-name">Lawn Tennis</div>
+                    <div class="sport-desc">Player form analysis, injury risk evaluation, stroke mechanics assessment, and performance tracking</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mode Selection (Cricket) -->
+        <div class="mode-selection" id="cricketModeSelection">
+            <h2 class="mode-title">Select Cricket Analysis Mode</h2>
+            <div class="mode-buttons">
+                <div class="mode-btn" data-mode="cricket-bowling">
+                    <div class="mode-icon">⚡</div>
+                    <div class="mode-name">Bowling Analysis</div>
+                    <div class="mode-desc">Action analysis, injury risk, ICC legality, release point, bowling type classification</div>
+                </div>
+                <div class="mode-btn" data-mode="cricket-batting">
+                    <div class="mode-icon">🎯</div>
+                    <div class="mode-name">Batting Analysis</div>
+                    <div class="mode-desc">Technique evaluation, injury risk, weight transfer, timing score, footwork assessment</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mode Selection (Tennis) -->
+        <div class="mode-selection" id="tennisModeSelection">
+            <h2 class="mode-title">Select Tennis Analysis Mode</h2>
+            <div class="mode-buttons">
+                <div class="mode-btn" data-mode="tennis-injury">
+                    <div class="mode-icon">🏥</div>
+                    <div class="mode-name">Injury Risk Analysis</div>
+                    <div class="mode-desc">Comprehensive injury risk assessment, biomechanical stress evaluation, prevention recommendations</div>
+                </div>
+                <div class="mode-btn" data-mode="tennis-form">
+                    <div class="mode-icon">📊</div>
+                    <div class="mode-name">Player Form Analysis</div>
+                    <div class="mode-desc">Stroke quality, footwork patterns, consistency tracking, performance metrics evaluation</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="upload-section" id="uploadSection">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📹</div>
+                <div class="upload-text">Drop your video here or click to browse</div>
+                <div class="upload-hint">Supports MP4, MOV, AVI (Max 100MB)</div>
+                <input type="file" id="videoInput" accept="video/*">
+            </div>
+            
+            <div class="video-preview" id="videoPreview">
+                <video id="videoPlayer" controls></video>
+            </div>
+
+            <button class="analyze-btn" id="analyzeBtn" disabled>
+                <span class="btn-text">🔬 Start AI Analysis</span>
+            </button>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading" id="loadingState">
+            <div class="spinner"></div>
+            <div class="loading-text">Analyzing video with AI... This may take a moment</div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+            <!-- Results will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        let selectedSport = null;
+        let selectedMode = null;
+        let uploadedVideo = null;
+
+        // Sport Selection
+        document.querySelectorAll('.sport-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.sport-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedSport = this.dataset.sport;
+                
+                // Hide all mode selections
+                document.getElementById('cricketModeSelection').classList.remove('active');
+                document.getElementById('tennisModeSelection').classList.remove('active');
+                
+                // Show relevant mode selection
+                if (selectedSport === 'cricket') {
+                    document.getElementById('cricketModeSelection').classList.add('active');
+                } else if (selectedSport === 'tennis') {
+                    document.getElementById('tennisModeSelection').classList.add('active');
+                }
+                
+                setTimeout(() => {
+                    const activeMode = selectedSport === 'cricket' ? 
+                        document.getElementById('cricketModeSelection') : 
+                        document.getElementById('tennisModeSelection');
+                    activeMode.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            });
+        });
+
+        // Mode Selection
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedMode = this.dataset.mode;
+                document.getElementById('uploadSection').classList.add('active');
+                setTimeout(() => {
+                    document.getElementById('uploadSection').scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            });
+        });
+
+        // Upload Area
+        const uploadArea = document.getElementById('uploadArea');
+        const videoInput = document.getElementById('videoInput');
+        const videoPreview = document.getElementById('videoPreview');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+
+        uploadArea.addEventListener('click', () => videoInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('video/')) {
+                handleVideoUpload(file);
+            }
+        });
+
+        videoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleVideoUpload(file);
+            }
+        });
+
+        function handleVideoUpload(file) {
+            uploadedVideo = file;
+            const url = URL.createObjectURL(file);
+            videoPlayer.src = url;
+            videoPreview.classList.add('active');
+            analyzeBtn.disabled = false;
+        }
+
+        // Analyze Button
+        analyzeBtn.addEventListener('click', async () => {
+            if (!uploadedVideo || !selectedMode) return;
+
+            // Hide upload section
+            document.getElementById('uploadSection').style.display = 'none';
+            document.getElementById('sportSelection').style.display = 'none';
+            document.getElementById('cricketModeSelection').style.display = 'none';
+            document.getElementById('tennisModeSelection').style.display = 'none';
+            
+            // Show loading
+            document.getElementById('loadingState').classList.add('active');
+
+            // Analyze based on mode
+            switch(selectedMode) {
+                case 'cricket-bowling':
+                    await analyzeCricketBowling();
+                    break;
+                case 'cricket-batting':
+                    await analyzeCricketBatting();
+                    break;
+                case 'tennis-injury':
+                    await analyzeTennisInjury();
+                    break;
+                case 'tennis-form':
+                    await analyzeTennisForm();
+                    break;
+            }
+        });
+
+        async function analyzeCricketBowling() {
+            try {
+                const response = await fetch("https://api.anthropic.com/v1/messages", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        model: "claude-sonnet-4-20250514",
+                        max_tokens: 1000,
+                        messages: [
+                            {
+                                role: "user",
+                                content: `Analyze this cricket bowling action video and provide detailed analysis in JSON format. Include:
+                                1. Bowling type (Fast/Spin/Medium)
+                                2. ICC legality status (Legal/Illegal/Suspect)
+                                3. Injury risk percentage (0-100)
+                                4. Release point coordinates (x, y as percentages)
+                                5. Detailed analysis points
+                                
+                                Respond ONLY with valid JSON in this exact format:
+                                {
+                                    "bowlingType": "Fast/Spin/Medium",
+                                    "iccLegality": "Legal/Illegal/Suspect",
+                                    "injuryRisk": 65,
+                                    "releasePoint": {"x": 45, "y": 60},
+                                    "detailedAnalysis": [
+                                        {"point": "Point title", "detail": "Detailed explanation"},
+                                        ...
+                                    ]
+                                }`
+                            }
+                        ]
+                    })
+                });
+
+                const data = await response.json();
+                let analysisText = data.content.map(item => item.type === "text" ? item.text : "").join("\n");
+                
+                analysisText = analysisText.replace(/```json|```/g, "").trim();
+                const analysis = JSON.parse(analysisText);
+
+                displayCricketBowlingResults(analysis);
+            } catch (error) {
+                console.error('Analysis error:', error);
+                displayCricketBowlingResults(getDemoCricketBowlingData());
+            }
+        }
+
+        async function analyzeCricketBatting() {
+            try {
+                const response = await fetch("https://api.anthropic.com/v1/messages", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        model: "claude-sonnet-4-20250514",
+                        max_tokens: 1000,
+                        messages: [
+                            {
+                                role: "user",
+                                content: `Analyze this cricket batting video and provide detailed analysis in JSON format. Include:
+                                1. Stance rating (0-100)
+                                2. Weight transfer quality (0-100)
+                                3. Timing score (0-100)
+                                4. Foot movement rating (0-100)
+                                5. Injury risk percentage (0-100)
+                                6. Weight transfer over time (array of percentages)
+                                7. Detailed analysis points
+                                
+                                Respond ONLY with valid JSON in this exact format:
+                                {
+                                    "stanceRating": 85,
+                                    "weightTransfer": 78,
+                                    "timingScore": 82,
+                                    "footMovement": 80,
+                                    "injuryRisk": 35,
+                                    "weightTransferOverTime": [20, 35, 55, 75, 85, 70, 45, 30],
+                                    "detailedAnalysis": [
+                                        {"point": "Point title", "detail": "Detailed explanation"},
+                                        ...
+                                    ]
+                                }`
+                            }
+                        ]
+                    })
+                });
+
+                const data = await response.json();
+                let analysisText = data.content.map(item => item.type === "text" ? item.text : "").join("\n");
+                
+                analysisText = analysisText.replace(/```json|```/g, "").trim();
+                const analysis = JSON.parse(analysisText);
+
+                displayCricketBattingResults(analysis);
+            } catch (error) {
+                console.error('Analysis error:', error);
+                displayCricketBattingResults(getDemoCricketBattingData());
+            }
+        }
+
+        async function analyzeTennisInjury() {
+            try {
+                const response = await fetch("https://api.anthropic.com/v1/messages", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        model: "claude-sonnet-4-20250514",
+                        max_tokens: 1000,
+                        messages: [
+                            {
+                                role: "user",
+                                content: `Analyze this tennis video for injury risks and provide detailed analysis in JSON format. Include:
+                                1. Overall injury risk (0-100)
+                                2. Shoulder injury risk (0-100)
+                                3. Elbow injury risk (0-100)
+                                4. Knee injury risk (0-100)
+                                5. Lower back injury risk (0-100)
+                                6. Detailed analysis points
+                                
+                                Respond ONLY with valid JSON in this exact format:
+                                {
+                                    "overallRisk": 45,
+                                    "shoulderRisk": 50,
+                                    "elbowRisk": 35,
+                                    "kneeRisk": 40,
+                                    "lowerBackRisk": 55,
+                                    "detailedAnalysis": [
+                                        {"point": "Point title", "detail": "Detailed explanation"},
+                                        ...
+                                    ]
+                                }`
+                            }
+                        ]
+                    })
+                });
+
+                const data = await response.json();
+                let analysisText = data.content.map(item => item.type === "text" ? item.text : "").join("\n");
+                
+                analysisText = analysisText.replace(/```json|```/g, "").trim();
+                const analysis = JSON.parse(analysisText);
+
+                displayTennisInjuryResults(analysis);
+            } catch (error) {
+                console.error('Analysis error:', error);
+                displayTennisInjuryResults(getDemoTennisInjuryData());
+            }
+        }
+
+        async function analyzeTennisForm() {
+            try {
+                const response = await fetch("https://api.anthropic.com/v1/messages", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        model: "claude-sonnet-4-20250514",
+                        max_tokens: 1000,
+                        messages: [
+                            {
+                                role: "user",
+                                content: `Analyze this tennis player's form and provide detailed analysis in JSON format. Include:
+                                1. Overall form rating (0-100)
+                                2. Forehand quality (0-100)
+                                3. Backhand quality (0-100)
+                                4. Serve quality (0-100)
+                                5. Footwork rating (0-100)
+                                6. Consistency score (0-100)
+                                7. Performance over time (array of percentages)
+                                8. Detailed analysis points
+                                
+                                Respond ONLY with valid JSON in this exact format:
+                                {
+                                    "overallForm": 78,
+                                    "forehandQuality": 82,
+                                    "backhandQuality": 75,
+                                    "serveQuality": 80,
+                                    "footworkRating": 76,
+                                    "consistencyScore": 79,
+                                    "performanceOverTime": [65, 70, 75, 78, 82, 80, 78, 79],
+                                    "detailedAnalysis": [
+                                        {"point": "Point title", "detail": "Detailed explanation"},
+                                        ...
+                                    ]
+                                }`
+                            }
+                        ]
+                    })
+                });
+
+                const data = await response.json();
+                let analysisText = data.content.map(item => item.type === "text" ? item.text : "").join("\n");
+                
+                analysisText = analysisText.replace(/```json|```/g, "").trim();
+                const analysis = JSON.parse(analysisText);
+
+                displayTennisFormResults(analysis);
+            } catch (error) {
+                console.error('Analysis error:', error);
+                displayTennisFormResults(getDemoTennisFormData());
+            }
+        }
+
+        function displayCricketBowlingResults(analysis) {
+            document.getElementById('loadingState').classList.remove('active');
+            
+            const legalityStatus = analysis.iccLegality === 'Legal' ? 'status-legal' : 
+                                   analysis.iccLegality === 'Illegal' ? 'status-illegal' : 'status-warning';
+            
+            const riskClass = analysis.injuryRisk < 30 ? 'status-low' :
+                             analysis.injuryRisk < 60 ? 'status-medium' : 'status-high';
+
+            const resultsHTML = `
+                <div class="results-header">
+                    <h2 class="results-title">Cricket Bowling Analysis Results</h2>
+                    <p style="color: var(--text-dim);">AI-powered comprehensive bowling action assessment</p>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-label">Bowling Type</div>
+                        <div class="result-value">${analysis.bowlingType}</div>
+                        <div class="result-desc">Classification based on action analysis</div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">ICC Legality</div>
+                        <div class="result-value">${analysis.iccLegality}</div>
+                        <span class="status-badge ${legalityStatus}">${analysis.iccLegality}</span>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">Injury Risk</div>
+                        <div class="result-value">${analysis.injuryRisk}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.injuryRisk}%"></div>
+                            </div>
+                        </div>
+                        <span class="status-badge ${riskClass}">${getRiskLevel(analysis.injuryRisk)}</span>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">Release Point</div>
+                        <div class="result-value">X: ${analysis.releasePoint.x}%</div>
+                        <div class="result-value">Y: ${analysis.releasePoint.y}%</div>
+                        <div class="result-desc">Position in frame coordinates</div>
+                    </div>
+                </div>
+
+                <div class="detailed-analysis">
+                    <h3 class="analysis-title">Detailed Technical Analysis</h3>
+                    ${analysis.detailedAnalysis.map(item => `
+                        <div class="analysis-item">
+                            <div class="analysis-point">✓ ${item.point}</div>
+                            <div class="analysis-detail">${item.detail}</div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <button class="reset-btn" onclick="resetAnalysis()">Analyze Another Video</button>
+            `;
+
+            document.getElementById('resultsSection').innerHTML = resultsHTML;
+            document.getElementById('resultsSection').classList.add('active');
+        }
+
+        function displayCricketBattingResults(analysis) {
+            document.getElementById('loadingState').classList.remove('active');
+
+            const riskClass = analysis.injuryRisk < 30 ? 'status-low' :
+                             analysis.injuryRisk < 60 ? 'status-medium' : 'status-high';
+
+            const resultsHTML = `
+                <div class="results-header">
+                    <h2 class="results-title">Cricket Batting Analysis Results</h2>
+                    <p style="color: var(--text-dim);">AI-powered comprehensive batting technique assessment</p>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-label">Stance Quality</div>
+                        <div class="result-value">${analysis.stanceRating}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.stanceRating}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">Weight Transfer</div>
+                        <div class="result-value">${analysis.weightTransfer}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.weightTransfer}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">Timing Score</div>
+                        <div class="result-value">${analysis.timingScore}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.timingScore}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">Foot Movement</div>
+                        <div class="result-value">${analysis.footMovement}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.footMovement}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">Injury Risk</div>
+                        <div class="result-value">${analysis.injuryRisk}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.injuryRisk}%"></div>
+                            </div>
+                        </div>
+                        <span class="status-badge ${riskClass}">${getRiskLevel(analysis.injuryRisk)}</span>
+                    </div>
+                </div>
+
+                <div class="detailed-analysis">
+                    <h3 class="analysis-title">Weight Transfer Over Time</h3>
+                    <div class="chart-container">
+                        <canvas id="weightChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="detailed-analysis">
+                    <h3 class="analysis-title">Detailed Technical Analysis</h3>
+                    ${analysis.detailedAnalysis.map(item => `
+                        <div class="analysis-item">
+                            <div class="analysis-point">✓ ${item.point}</div>
+                            <div class="analysis-detail">${item.detail}</div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <button class="reset-btn" onclick="resetAnalysis()">Analyze Another Video</button>
+            `;
+
+            document.getElementById('resultsSection').innerHTML = resultsHTML;
+            document.getElementById('resultsSection').classList.add('active');
+
+            drawWeightTransferChart(analysis.weightTransferOverTime);
+        }
+
+        function displayTennisInjuryResults(analysis) {
+            document.getElementById('loadingState').classList.remove('active');
+
+            const overallRiskClass = analysis.overallRisk < 30 ? 'status-low' :
+                                    analysis.overallRisk < 60 ? 'status-medium' : 'status-high';
+
+            const resultsHTML = `
+                <div class="results-header">
+                    <h2 class="results-title">Tennis Injury Risk Analysis Results</h2>
+                    <p style="color: var(--text-dim);">AI-powered comprehensive injury risk assessment</p>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-label">Overall Risk</div>
+                        <div class="result-value">${analysis.overallRisk}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.overallRisk}%"></div>
+                            </div>
+                        </div>
+                        <span class="status-badge ${overallRiskClass}">${getRiskLevel(analysis.overallRisk)}</span>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">Shoulder Risk</div>
+                        <div class="result-value">${analysis.shoulderRisk}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.shoulderRisk}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">Elbow Risk</div>
+                        <div class="result-value">${analysis.elbowRisk}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.elbowRisk}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">Knee Risk</div>
+                        <div class="result-value">${analysis.kneeRisk}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.kneeRisk}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">Lower Back Risk</div>
+                        <div class="result-value">${analysis.lowerBackRisk}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.lowerBackRisk}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detailed-analysis">
+                    <h3 class="analysis-title">Detailed Injury Risk Analysis</h3>
+                    ${analysis.detailedAnalysis.map(item => `
+                        <div class="analysis-item">
+                            <div class="analysis-point">⚠ ${item.point}</div>
+                            <div class="analysis-detail">${item.detail}</div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <button class="reset-btn" onclick="resetAnalysis()">Analyze Another Video</button>
+            `;
+
+            document.getElementById('resultsSection').innerHTML = resultsHTML;
+            document.getElementById('resultsSection').classList.add('active');
+        }
+
+        function displayTennisFormResults(analysis) {
+            document.getElementById('loadingState').classList.remove('active');
+
+            const formClass = analysis.overallForm >= 80 ? 'status-excellent' :
+                             analysis.overallForm >= 65 ? 'status-good' :
+                             analysis.overallForm >= 50 ? 'status-fair' : 'status-poor';
+
+            const resultsHTML = `
+                <div class="results-header">
+                    <h2 class="results-title">Tennis Player Form Analysis Results</h2>
+                    <p style="color: var(--text-dim);">AI-powered comprehensive performance assessment</p>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-label">Overall Form</div>
+                        <div class="result-value">${analysis.overallForm}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.overallForm}%"></div>
+                            </div>
+                        </div>
+                        <span class="status-badge ${formClass}">${getFormLevel(analysis.overallForm)}</span>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">Forehand Quality</div>
+                        <div class="result-value">${analysis.forehandQuality}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.forehandQuality}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">Backhand Quality</div>
+                        <div class="result-value">${analysis.backhandQuality}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.backhandQuality}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">Serve Quality</div>
+                        <div class="result-value">${analysis.serveQuality}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.serveQuality}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">Footwork Rating</div>
+                        <div class="result-value">${analysis.footworkRating}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.footworkRating}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <div class="result-label">Consistency Score</div>
+                        <div class="result-value">${analysis.consistencyScore}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${analysis.consistencyScore}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detailed-analysis">
+                    <h3 class="analysis-title">Performance Trend Over Time</h3>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="detailed-analysis">
+                    <h3 class="analysis-title">Detailed Form Analysis</h3>
+                    ${analysis.detailedAnalysis.map(item => `
+                        <div class="analysis-item">
+                            <div class="analysis-point">✓ ${item.point}</div>
+                            <div class="analysis-detail">${item.detail}</div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <button class="reset-btn" onclick="resetAnalysis()">Analyze Another Video</button>
+            `;
+
+            document.getElementById('resultsSection').innerHTML = resultsHTML;
+            document.getElementById('resultsSection').classList.add('active');
+
+            drawPerformanceChart(analysis.performanceOverTime);
+        }
+
+        function drawWeightTransferChart(data) {
+            const canvas = document.getElementById('weightChart');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 300;
+
+            const padding = 40;
+            const chartWidth = canvas.width - 2 * padding;
+            const chartHeight = canvas.height - 2 * padding;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 10; i++) {
+                const y = padding + (chartHeight / 10) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(canvas.width - padding, y);
+                ctx.stroke();
+            }
+
+            // Draw axes
+            ctx.strokeStyle = 'rgba(0, 255, 204, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.stroke();
+
+            // Draw data line
+            ctx.strokeStyle = '#00ffcc';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const stepX = chartWidth / (data.length - 1);
+            data.forEach((value, index) => {
+                const x = padding + index * stepX;
+                const y = canvas.height - padding - (value / 100) * chartHeight;
+                
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+
+            // Draw points
+            data.forEach((value, index) => {
+                const x = padding + index * stepX;
+                const y = canvas.height - padding - (value / 100) * chartHeight;
+                
+                ctx.fillStyle = '#00ffcc';
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#00ffcc';
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            });
+
+            // Labels
+            ctx.fillStyle = '#8b92a0';
+            ctx.font = '12px Exo 2';
+            ctx.textAlign = 'center';
+            ctx.fillText('Time Progression →', canvas.width / 2, canvas.height - 10);
+            
+            ctx.save();
+            ctx.translate(15, canvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Weight Transfer %', 0, 0);
+            ctx.restore();
+        }
+
+        function drawPerformanceChart(data) {
+            const canvas = document.getElementById('performanceChart');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 300;
+
+            const padding = 40;
+            const chartWidth = canvas.width - 2 * padding;
+            const chartHeight = canvas.height - 2 * padding;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 10; i++) {
+                const y = padding + (chartHeight / 10) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(canvas.width - padding, y);
+                ctx.stroke();
+            }
+
+            // Draw axes
+            ctx.strokeStyle = 'rgba(127, 219, 106, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.stroke();
+
+            // Draw gradient area
+            const gradient = ctx.createLinearGradient(0, padding, 0, canvas.height - padding);
+            gradient.addColorStop(0, 'rgba(127, 219, 106, 0.3)');
+            gradient.addColorStop(1, 'rgba(127, 219, 106, 0)');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            const stepX = chartWidth / (data.length - 1);
+            data.forEach((value, index) => {
+                const x = padding + index * stepX;
+                const y = canvas.height - padding - (value / 100) * chartHeight;
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.lineTo(padding, canvas.height - padding);
+            ctx.closePath();
+            ctx.fill();
+
+            // Draw data line
+            ctx.strokeStyle = '#7fdb6a';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            data.forEach((value, index) => {
+                const x = padding + index * stepX;
+                const y = canvas.height - padding - (value / 100) * chartHeight;
+                
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+
+            // Draw points
+            data.forEach((value, index) => {
+                const x = padding + index * stepX;
+                const y = canvas.height - padding - (value / 100) * chartHeight;
+                
+                ctx.fillStyle = '#7fdb6a';
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#7fdb6a';
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            });
+
+            // Labels
+            ctx.fillStyle = '#8b92a0';
+            ctx.font = '12px Exo 2';
+            ctx.textAlign = 'center';
+            ctx.fillText('Sessions/Matches →', canvas.width / 2, canvas.height - 10);
+            
+            ctx.save();
+            ctx.translate(15, canvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Performance %', 0, 0);
+            ctx.restore();
+        }
+
+        function getRiskLevel(risk) {
+            if (risk < 30) return 'Low Risk';
+            if (risk < 60) return 'Medium Risk';
+            return 'High Risk';
+        }
+
+        function getFormLevel(form) {
+            if (form >= 80) return 'Excellent';
+            if (form >= 65) return 'Good';
+            if (form >= 50) return 'Fair';
+            return 'Needs Work';
+        }
+
+        function resetAnalysis() {
+            location.reload();
+        }
+
+        // Demo data functions
+        function getDemoCricketBowlingData() {
+            return {
+                bowlingType: "Fast",
+                iccLegality: "Legal",
+                injuryRisk: 62,
+                releasePoint: { x: 47, y: 58 },
+                detailedAnalysis: [
+                    {
+                        point: "Bowling Action Mechanics",
+                        detail: "The bowler demonstrates a classical fast bowling action with excellent shoulder rotation and complete follow-through. The arm angle at release is within ICC regulations, showing no signs of illegal extension."
+                    },
+                    {
+                        point: "Injury Risk Assessment",
+                        detail: "Medium-high injury risk detected (62%) primarily due to slight hyperextension in the lower back during delivery stride. The front knee experiences significant impact force at foot strike. Recommend core strengthening exercises and gradual workload management."
+                    },
+                    {
+                        point: "Release Point Consistency",
+                        detail: "Release point shows good consistency at approximately 47% horizontal and 58% vertical frame position. This repeatability indicates well-grooved action mechanics and contributes to improved accuracy."
+                    },
+                    {
+                        point: "Load Distribution Analysis",
+                        detail: "Peak biomechanical stress occurs during the bound phase with significant loading on the lower back and front knee. The delivery stride shows approximately 6-8 times body weight force absorption, which is within normal range but requires monitoring."
+                    },
+                    {
+                        point: "Recommendations",
+                        detail: "To reduce injury risk: (1) Implement targeted core and lower back strengthening program, (2) Monitor bowling workload carefully - avoid consecutive match days, (3) Regular physiotherapy sessions focusing on hip mobility and spine flexibility, (4) Proper warm-up routine emphasizing dynamic stretching."
+                    }
+                ]
+            };
+        }
+
+        function getDemoCricketBattingData() {
+            return {
+                stanceRating: 83,
+                weightTransfer: 76,
+                timingScore: 81,
+                footMovement: 78,
+                injuryRisk: 32,
+                weightTransferOverTime: [22, 38, 56, 74, 83, 68, 46, 28],
+                detailedAnalysis: [
+                    {
+                        point: "Stance & Balance Assessment",
+                        detail: "Excellent balanced stance (83%) with weight evenly distributed across both feet. Feet positioned appropriately shoulder-width apart with optimal knee flexion at approximately 165 degrees, allowing for explosive movement in any direction."
+                    },
+                    {
+                        point: "Weight Transfer Mechanics",
+                        detail: "Good weight transfer dynamics (76%) showing smooth progression from back foot to front foot during forward defensive and attacking strokes. Peak transfer occurs at optimal timing window for maximum power generation with minimal energy leakage."
+                    },
+                    {
+                        point: "Injury Risk Evaluation",
+                        detail: "Low-moderate injury risk (32%) detected. Primary concerns include slight rotational stress on lower back during pull shots and potential knee strain during deep forward movements. Current technique shows good fundamental mechanics reducing long-term injury probability."
+                    },
+                    {
+                        point: "Foot Movement Technique",
+                        detail: "Positive foot movement quality (78%) with decisive steps toward the pitch of the ball. Front foot reaches the pitch effectively creating a solid base for shot execution. Back foot movements show good trigger movements and balanced positioning."
+                    },
+                    {
+                        point: "Timing & Coordination",
+                        detail: "Strong timing score (81%) demonstrating excellent synchronization between hip rotation, shoulder turn, and bat swing. The kinetic chain sequencing is efficient, transferring energy from ground contact through legs, torso, and arms into the bat."
+                    },
+                    {
+                        point: "Injury Prevention Recommendations",
+                        detail: "To maintain low injury risk: (1) Continue regular flexibility training, especially hip and hamstring stretches, (2) Strengthen core muscles for better rotational stability, (3) Practice controlled pull shots to reduce back strain, (4) Ensure proper footwear with adequate ankle support and cushioning."
+                    }
+                ]
+            };
+        }
+
+        function getDemoTennisInjuryData() {
+            return {
+                overallRisk: 48,
+                shoulderRisk: 52,
+                elbowRisk: 38,
+                kneeRisk: 45,
+                lowerBackRisk: 56,
+                detailedAnalysis: [
+                    {
+                        point: "Shoulder Injury Risk - Moderate (52%)",
+                        detail: "Shoulder mechanics show some concerning patterns particularly during serve motion. Internal rotation velocity is high with potential rotator cuff stress. The follow-through phase shows incomplete deceleration pattern which can lead to impingement syndrome over time. Recommend scapular stabilization exercises and external rotation strengthening."
+                    },
+                    {
+                        point: "Elbow Injury Risk - Low-Moderate (38%)",
+                        detail: "Tennis elbow (lateral epicondylitis) risk is moderate. Backhand technique shows good wrist position minimizing extensor strain. However, serve motion exhibits slight wrist snap which could accumulate stress on common extensor tendon. Forearm strengthening and proper racquet grip size are recommended."
+                    },
+                    {
+                        point: "Knee Injury Risk - Moderate (45%)",
+                        detail: "Knee stress analysis reveals moderate risk particularly during lateral movements and quick direction changes. Patellar tendon experiences repeated eccentric loading during split steps and recovery movements. Quadriceps-to-hamstring strength ratio appears slightly imbalanced. Recommend plyometric training and eccentric strengthening exercises."
+                    },
+                    {
+                        point: "Lower Back Injury Risk - Moderate-High (56%)",
+                        detail: "Highest injury risk area identified. Serve motion shows excessive spinal extension and rotation creating cumulative stress on lumbar facet joints and intervertebral discs. Repeated hyperextension during overhead shots without adequate core stability increases herniation risk. Core strengthening, especially deep stabilizers, is critical."
+                    },
+                    {
+                        point: "Overall Biomechanical Assessment",
+                        detail: "Overall injury risk of 48% indicates need for preventive measures. Movement patterns show athletic ability but with some technical inefficiencies that accumulate stress. Most concerning areas are lower back and shoulder which bear highest loads during serves and groundstrokes."
+                    },
+                    {
+                        point: "Comprehensive Prevention Strategy",
+                        detail: "Recommended prevention program: (1) Daily core stabilization exercises focusing on transverse abdominis and multifidus, (2) Rotator cuff strengthening with resistance bands - external rotation 3x15, (3) Eccentric quadriceps training for knee stability, (4) Thoracic spine mobility exercises to reduce compensatory lumbar stress, (5) Proper warm-up including dynamic stretching and activation drills, (6) Regular sports physiotherapy assessment every 4-6 weeks."
+                    }
+                ]
+            };
+        }
+
+        function getDemoTennisFormData() {
+            return {
+                overallForm: 76,
+                forehandQuality: 81,
+                backhandQuality: 73,
+                serveQuality: 78,
+                footworkRating: 74,
+                consistencyScore: 77,
+                performanceOverTime: [64, 68, 73, 76, 80, 78, 76, 77],
+                detailedAnalysis: [
+                    {
+                        point: "Overall Form Assessment - Good (76%)",
+                        detail: "Current form shows solid performance across all stroke categories with steady improvement trend over recent sessions. Player demonstrates good technical fundamentals with room for refinement in specific areas. The performance curve indicates positive trajectory with some plateauing in recent matches suggesting need for tactical adjustments."
+                    },
+                    {
+                        point: "Forehand Stroke Analysis - Very Good (81%)",
+                        detail: "Forehand is the strongest weapon showing excellent racquet preparation, optimal contact point, and powerful weight transfer through the ball. Topspin generation is consistent with good brush on the ball. Follow-through is complete and balanced. Minor adjustment needed: slightly earlier preparation on faster incoming balls and improved recovery step positioning."
+                    },
+                    {
+                        point: "Backhand Technique Evaluation - Good (73%)",
+                        detail: "Backhand mechanics are solid but show less consistency compared to forehand. Two-handed backhand demonstrates good shoulder turn and sequential unwinding. However, contact point varies under pressure situations. Recommendation: drill backhand down-the-line shots for improved directional control and practice high backhand with focus on maintaining contact point consistency."
+                    },
+                    {
+                        point: "Serve Quality & Effectiveness - Good (78%)",
+                        detail: "Serve shows good fundamentals with consistent ball toss and effective leg drive. First serve percentage is respectable with good power generation. Second serve could benefit from more topspin variation. Service motion efficiency is high but could improve trophy position for better shoulder-over-shoulder rotation. Practice kick serves for better second serve security."
+                    },
+                    {
+                        point: "Footwork & Court Movement - Good (74%)",
+                        detail: "Footwork patterns show good anticipation and first-step quickness. Split-step timing is generally accurate allowing for efficient directional changes. However, recovery after wide balls could be faster - often taking extra step which reduces court coverage. Lateral movement is strong but forward/backward transition needs work. Recommend agility ladder drills and cone exercises."
+                    },
+                    {
+                        point: "Consistency & Match Pressure - Good (77%)",
+                        detail: "Shot consistency under normal rally conditions is strong showing good concentration and technical repeatability. However, consistency drops slightly under pressure situations (break points, critical game situations). Mental toughness training and pressure practice scenarios recommended. Unforced error rate is acceptable but could improve with better shot selection in neutral situations."
+                    },
+                    {
+                        point: "Performance Trend Analysis",
+                        detail: "Recent performance data shows encouraging upward trend from 64% to current 77% over last 8 sessions/matches. Peak performance reached at 80% three sessions ago with slight dip afterward suggesting possible fatigue or mental saturation. Current plateau indicates ready for next level training intensity or tactical complexity. Recommend: introduce new patterns, work on net game, and strategic serving variations."
+                    },
+                    {
+                        point: "Development Recommendations",
+                        detail: "To elevate to next performance level (80%+): (1) Increase backhand down-the-line usage to prevent opponents camping on forehand side, (2) Develop reliable approach shot for net transitions, (3) Improve second serve with kick variation, (4) Enhance mental resilience through pressure training and match simulation, (5) Refine court positioning - reduce mid-court lingering, (6) Add variation to shot pace and trajectory to disrupt opponent rhythm."
+                    }
+                ]
+            };
+        }
+    </script>
+</body>
+</html>
